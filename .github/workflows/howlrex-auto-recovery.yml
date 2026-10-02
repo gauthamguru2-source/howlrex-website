@@ -21,9 +21,6 @@ jobs:
         run: |
           set -euo pipefail
           files=(
-            index.html
-            styles.css
-            script.js
             vercel.json
             robots.txt
             SECURITY.md
