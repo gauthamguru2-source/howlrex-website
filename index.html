@@ -16,7 +16,7 @@
 <div class="hero-portrait"><div class="portrait-glow"></div><img src="assets/img/profile.jpg" alt="HowlRex cinematic profile portrait"></div><div class="hero-scroll">SCROLL <span>↓</span></div></section>
 <section class="marquee"><div>TRAVEL <b>•</b> TECH <b>•</b> FITNESS <b>•</b> LIFESTYLE <b>•</b> MOTIVATION <b>•</b> AUTOMOTIVE <b>•</b> MODELING <b>•</b> </div></section>
 <section class="section about" id="about"><div class="section-label">01 / ABOUT</div><div class="about-grid"><div class="about-photo reveal"><img src="assets/img/portfolio-2.jpg" alt="HowlRex lifestyle portrait"><span class="photo-tag">HOWLREX / 2026</span></div><div class="about-copy reveal"><p class="kicker">THE JOURNEY</p><h2>Building a life worth <em>watching.</em></h2><p>HowlRex is a personal creator brand built around lifestyle, travel, technology, fitness, motivation, fashion and automotive storytelling.</p><p>The website brings the visual world behind the channel into one place — from cinematic Shorts and car films to modeling and lifestyle work.</p><div class="stats"><div><strong>01</strong><span>Creator Brand</span></div><div><strong>02</strong><span>Modeling & Style</span></div><div><strong>03</strong><span>Automotive Stories</span></div></div></div></div></section>
-<section class="section banner-section"><img src="banner.png.jpeg" alt="HowlRex YouTube banner"></section>
+<section class="section banner-section"><img src="assets/img/banner.png.jpeg" alt="HowlRex YouTube banner"></section>
 <section class="section portfolio" id="portfolio"><div class="section-label">02 / PORTFOLIO</div><div class="section-heading"><div><p class="kicker">VISUAL IDENTITY</p><h2>Frames that define<br><em>the character.</em></h2></div><p>Selected lifestyle, fashion and portrait work from the HowlRex visual archive.</p></div><div class="portfolio-grid">
 <figure class="portfolio-card tall reveal"><img src="assets/img/portfolio-1.jpg" alt="HowlRex red jacket portrait"><figcaption><span>01</span> Portrait / Red</figcaption></figure>
 <figure class="portfolio-card reveal"><img src="assets/img/portfolio-2.jpg" alt="HowlRex on Royal Enfield"><figcaption><span>02</span> Lifestyle / Ride</figcaption></figure>
@@ -31,38 +31,27 @@
 <article class="video-card reveal"><div class="video-wrap"><video controls preload="metadata" poster="assets/img/thirty-sec.jpg"><source src="assets/video/thirty-sec.mp4" type="video/mp4"></video></div><div class="video-info"><span>02 / SHORT FILM</span><h3>30 Second Cut</h3><p>A fast cinematic edit built for vertical-first storytelling.</p></div></article>
 <article class="video-card reveal"><div class="video-wrap"><video controls preload="metadata" poster="assets/img/new-home.jpg"><source src="assets/video/new-home.mp4" type="video/mp4"></video></div><div class="video-info"><span>03 / HOME FILM</span><h3>New Home</h3><p>A cinematic lifestyle piece from the HowlRex archive.</p></div></article></div></section>
 <section class="youtube-cta"><div class="youtube-mark">▶</div><div><p class="kicker">FOLLOW THE JOURNEY</p><h2>New stories are waiting on YouTube.</h2></div><a class="btn btn-gold" href="https://www.youtube.com/@HowlRex" target="_blank" rel="noopener">Subscribe to HowlRex ↗</a></section>
-<section class="section contact" id="contact">
+<section class="section contact" id="contact<section class="section contact" id="contact">
 
     <div class="section-label">05 / CONTACT</div>
 
     <div class="contact-box reveal">
 
-        <div class="contact-intro">
-
-            <p class="kicker">OFFICIAL COLLABORATIONS</p>
+        <div>
+            <p class="kicker">COLLABORATIONS</p>
 
             <h2>
                 Let's create the<br>
                 <em>next story.</em>
             </h2>
-
-            <p class="contact-description">
-                For official modeling, creator, automotive, lifestyle,
-                fashion and brand collaborations, send your enquiry below.
-            </p>
-
-            <div class="official-note">
-                <span>✦</span>
-
-                <div>
-                    <strong>HOWLREX</strong>
-                    <small>Official Creator &amp; Model</small>
-                </div>
-            </div>
-
         </div>
 
         <div class="contact-side">
+
+            <p>
+                For modeling, creator, automotive, lifestyle or brand
+                collaborations, connect through the form below.
+            </p>
 
             <form
                 id="howlrex-contact-form"
@@ -70,89 +59,59 @@
                 method="POST"
             >
 
-                <div class="form-group">
-
-                    <label for="name">
-                        FULL NAME
-                    </label>
-
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        placeholder="Your full name"
-                        autocomplete="name"
-                        required
-                    >
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="instagram">
-                        INSTAGRAM ID
-                    </label>
-
-                    <input
-                        type="text"
-                        id="instagram"
-                        name="instagram"
-                        placeholder="@yourusername"
-                        autocomplete="off"
-                        required
-                    >
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="message">
-                        COLLABORATION DETAILS
-                    </label>
-
-                    <textarea
-                        id="message"
-                        name="message"
-                        rows="5"
-                        placeholder="Tell me about your project, brand or collaboration..."
-                        required
-                    ></textarea>
-
-                </div>
+                <label for="instagram">
+                    Instagram ID
+                </label>
 
                 <input
-                    type="hidden"
-                    name="_subject"
-                    value="Official HowlRex Collaboration Enquiry"
+                    type="text"
+                    id="instagram"
+                    name="instagram"
+                    placeholder="@yourusername"
+                    autocomplete="off"
+                    required
                 >
+
+                <label for="name">
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Your name"
+                    autocomplete="name"
+                    required
+                >
+
+                <label for="message">
+                    Message
+                </label>
+
+                <textarea
+                    id="message"
+                    name="message"
+                    rows="4"
+                    placeholder="Tell me about your collaboration..."
+                    required
+                ></textarea>
 
                 <button
                     type="submit"
-                    class="btn btn-gold contact-submit"
+                    class="btn btn-gold"
                 >
-                    SEND OFFICIAL ENQUIRY ↗
+                    Send Message ↗
                 </button>
 
             </form>
 
-            <div class="form-success" id="form-success">
-
-                <strong>ENQUIRY RECEIVED</strong>
-
-                <span>
-                    Thank you. Your collaboration request has been received.
-                </span>
-
+            <div data-fs-success>
+                Thank you. Your message has been received.
             </div>
 
-            <div class="form-error" id="form-error">
-
-                <strong>PLEASE TRY AGAIN</strong>
-
-                <span>
-                    Something went wrong. Please try again.
-                </span>
-
+            <div data-fs-error>
+                Something went wrong. Please try again.
             </div>
 
             <div class="social-links">
