@@ -1,0 +1,29 @@
+name: HOWLREX Integrity Guard
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify official identity and security policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'https://www.instagram.com/howlrex07/' index.html
+          grep -Fq 'https://www.youtube.com/@HowlRex' index.html
+          grep -Fq 'https://howlrex-website.vercel.app/' index.html
+          grep -Fq '"@type":"ProfilePage"' index.html
+          grep -Fq '"@type":"Person"' index.html
+          test -f SECURITY.md
+          test -f SECURITY-MANIFEST.json
+          test -f .github/CODEOWNERS
+          test -f vercel.json
+          test -f robots.txt
+          echo "HOWLREX integrity checks passed."
