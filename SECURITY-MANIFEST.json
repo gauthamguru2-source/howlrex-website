@@ -1,0 +1,9 @@
+{
+  "purpose": "HOWLREX critical identity integrity policy",
+  "official_destinations": {
+    "website": "https://howlrex-website.vercel.app/",
+    "instagram": "https://www.instagram.com/howlrex07/",
+    "youtube": "https://www.youtube.com/@HowlRex"
+  },
+  "policy": "Unexpected changes to official identity destinations or required security files must fail the integrity check and require owner review."
+}
