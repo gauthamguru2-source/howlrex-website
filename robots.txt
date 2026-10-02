@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://howlrex-website.vercel.app/sitemap.xml
