@@ -9,11 +9,3 @@ function openVideo(key){const src=videoFiles[key];if(!src)return;player.src=src;
 function closeVideo(){player.pause();player.removeAttribute("src");player.load();modal.classList.remove("open");modal.setAttribute("aria-hidden","true");document.body.classList.remove("modal-open")}
 document.querySelectorAll("[data-video]").forEach(el=>el.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openVideo(el.dataset.video)}));document.querySelector(".video-close")?.addEventListener("click",closeVideo);document.querySelector(".video-backdrop")?.addEventListener("click",closeVideo);document.addEventListener("keydown",e=>{if(e.key==="Escape"&&modal.classList.contains("open"))closeVideo()});
 const glow=document.querySelector(".cursor-glow");if(glow&&matchMedia("(pointer:fine)").matches)document.addEventListener("pointermove",e=>{glow.style.left=e.clientX+"px";glow.style.top=e.clientY+"px"});
-/* HOWLREX BACKGROUND MUSIC — mobile-safe playback */
-const backgroundMusic=document.getElementById("backgroundMusic"),musicToggle=document.getElementById("musicToggle"),musicLabel=document.querySelector(".music-label");
-let musicEnabled=false;
-function musicUI(on){musicEnabled=on;musicToggle?.setAttribute("aria-pressed",on?"true":"false");musicToggle?.setAttribute("aria-label",on?"Turn background music off":"Start background music");if(musicLabel)musicLabel.textContent=on?"SOUND ON":"SOUND"}
-function startMusic(){if(!backgroundMusic)return;try{backgroundMusic.volume=0.28;const p=backgroundMusic.play();if(p)p.then(()=>musicUI(true)).catch(()=>musicUI(false));}catch(e){musicUI(false)}}
-function stopMusic(){if(backgroundMusic){backgroundMusic.pause();musicUI(false)}}
-if(backgroundMusic){backgroundMusic.addEventListener("error",()=>musicUI(false));document.addEventListener("pointerup",function firstTouch(){startMusic();document.removeEventListener("pointerup",firstTouch)}, {passive:true});document.addEventListener("touchend",function firstTouch(){startMusic();document.removeEventListener("touchend",firstTouch)}, {passive:true});document.addEventListener("click",function firstClick(){startMusic();document.removeEventListener("click",firstClick)}, {passive:true});}
-musicToggle?.addEventListener("click",e=>{e.stopPropagation();if(musicEnabled)stopMusic();else startMusic()});
