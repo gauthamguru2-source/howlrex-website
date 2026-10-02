@@ -9,3 +9,12 @@ function openVideo(key){const src=videoFiles[key];if(!src)return;player.src=src;
 function closeVideo(){player.pause();player.removeAttribute("src");player.load();modal.classList.remove("open");modal.setAttribute("aria-hidden","true");document.body.classList.remove("modal-open")}
 document.querySelectorAll("[data-video]").forEach(el=>el.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openVideo(el.dataset.video)}));document.querySelector(".video-close")?.addEventListener("click",closeVideo);document.querySelector(".video-backdrop")?.addEventListener("click",closeVideo);document.addEventListener("keydown",e=>{if(e.key==="Escape"&&modal.classList.contains("open"))closeVideo()});
 const glow=document.querySelector(".cursor-glow");if(glow&&matchMedia("(pointer:fine)").matches)document.addEventListener("pointermove",e=>{glow.style.left=e.clientX+"px";glow.style.top=e.clientY+"px"});
+/* HOWLREX BACKGROUND MUSIC — full-visit playback */
+const backgroundMusic=document.querySelector("#backgroundMusic"),musicToggle=document.querySelector("#musicToggle"),musicLabel=document.querySelector(".music-label");
+let musicEnabled=true;
+function updateMusicUI(on){musicEnabled=on;musicToggle?.setAttribute("aria-pressed",String(on));musicToggle?.setAttribute("aria-label",on?"Turn background music off":"Turn background music on");if(musicLabel)musicLabel.textContent=on?"SOUND ON":"SOUND OFF"}
+function startBackgroundMusic(){if(!backgroundMusic)return;backgroundMusic.muted=false;backgroundMusic.volume=.28;const p=backgroundMusic.play();if(p)p.then(()=>updateMusicUI(true)).catch(()=>updateMusicUI(false))}
+function stopBackgroundMusic(){if(!backgroundMusic)return;backgroundMusic.pause();updateMusicUI(false)}
+if(backgroundMusic){backgroundMusic.addEventListener("ended",()=>{backgroundMusic.currentTime=0;startBackgroundMusic()});window.addEventListener("load",startBackgroundMusic,{once:true});document.addEventListener("pointerdown",()=>{if(backgroundMusic.paused)startBackgroundMusic()},{once:true});document.addEventListener("keydown",()=>{if(backgroundMusic.paused)startBackgroundMusic()},{once:true})}
+musicToggle?.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();musicEnabled?stopBackgroundMusic():startBackgroundMusic()});
+window.addEventListener("pagehide",stopBackgroundMusic);
