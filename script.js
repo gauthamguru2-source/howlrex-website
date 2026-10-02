@@ -9,3 +9,10 @@ function openVideo(key){const src=videoFiles[key];if(!src)return;player.src=src;
 function closeVideo(){player.pause();player.removeAttribute("src");player.load();modal.classList.remove("open");modal.setAttribute("aria-hidden","true");document.body.classList.remove("modal-open")}
 document.querySelectorAll("[data-video]").forEach(el=>el.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openVideo(el.dataset.video)}));document.querySelector(".video-close")?.addEventListener("click",closeVideo);document.querySelector(".video-backdrop")?.addEventListener("click",closeVideo);document.addEventListener("keydown",e=>{if(e.key==="Escape"&&modal.classList.contains("open"))closeVideo()});
 const glow=document.querySelector(".cursor-glow");if(glow&&matchMedia("(pointer:fine)").matches)document.addEventListener("pointermove",e=>{glow.style.left=e.clientX+"px";glow.style.top=e.clientY+"px"});
+/* HOWLREX BACKGROUND MUSIC */
+const backgroundMusic=document.querySelector("#backgroundMusic"),musicToggle=document.querySelector("#musicToggle"),musicLabel=document.querySelector(".music-label");
+let musicEnabled=false;
+function setMusicState(enabled){musicEnabled=enabled;if(enabled){backgroundMusic.muted=false;backgroundMusic.volume=.28;backgroundMusic.play().then(()=>{musicToggle?.setAttribute("aria-pressed","true");musicToggle?.setAttribute("aria-label","Pause background music");if(musicLabel)musicLabel.textContent="SOUND ON"}).catch(()=>{musicEnabled=false;backgroundMusic.muted=true})}else{backgroundMusic.pause();backgroundMusic.muted=true;musicToggle?.setAttribute("aria-pressed","false");musicToggle?.setAttribute("aria-label","Turn background music on");if(musicLabel)musicLabel.textContent="SOUND OFF"}}
+musicToggle?.addEventListener("click",e=>{e.stopPropagation();setMusicState(!musicEnabled)});
+const startMusicAfterGesture=()=>{if(!musicEnabled)setMusicState(true);window.removeEventListener("pointerdown",startMusicAfterGesture);window.removeEventListener("keydown",startMusicAfterGesture)};
+window.addEventListener("pointerdown",startMusicAfterGesture,{once:true});window.addEventListener("keydown",startMusicAfterGesture,{once:true});
