@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="description" content="Private HowlRex project vault">
+<title>HOWLREX • PRIVATE VAULT</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#070707;color:#eee;font-family:Arial,sans-serif;display:grid;place-items:center;padding:24px}.card{width:min(460px,100%);padding:36px;border:1px solid #292929;background:linear-gradient(145deg,#111,#080808);box-shadow:0 30px 90px #000;border-radius:18px}.eyebrow{font-size:10px;letter-spacing:.3em;color:#777}.logo{font-size:30px;letter-spacing:.12em;margin:12px 0 8px}.sub{color:#777;font-size:13px;line-height:1.6}.row{display:flex;gap:10px;margin-top:26px}input{flex:1;min-width:0;background:#050505;border:1px solid #333;color:#fff;padding:14px;border-radius:8px;outline:none}button{border:0;background:#fff;color:#000;padding:0 20px;border-radius:8px;font-weight:700;cursor:pointer}button:disabled{opacity:.5}.status{min-height:20px;margin-top:16px;font-size:12px;color:#888}.ok{color:#8ee6a5}.bad{color:#ff7373}.vault{display:none}.vault pre{white-space:pre-wrap;background:#050505;border:1px solid #222;padding:18px;border-radius:10px;color:#aaa;font-size:12px;line-height:1.6}.logout{margin-top:16px;padding:10px 14px;background:#191919;color:#ddd;border:1px solid #333}.warning{margin-top:20px;font-size:11px;color:#666;line-height:1.5}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="eyebrow">HOWLREX / RESTRICTED</div>
+  <div class="logo">PRIVATE VAULT</div>
+  <div class="sub">Server-side authentication. No password is stored in this page or exposed to the browser after submission.</div>
+  <section id="login">
+    <form id="form" class="row">
+      <input id="password" type="password" autocomplete="current-password" placeholder="Vault password" required>
+      <button id="submit" type="submit">ENTER</button>
+    </form>
+    <div id="status" class="status" aria-live="polite"></div>
+  </section>
+  <section id="vault" class="vault">
+    <div class="status ok">AUTHENTICATED SESSION ACTIVE</div>
+    <pre>HOWLREX PRIVATE VAULT
+
+This gateway is authenticated.
+
+Sensitive project material should be stored behind this server-side session, never in public HTML, JavaScript, CSS, or a public Git repository.
+
+Session protection:
+• HttpOnly cookie
+• Secure cookie
+• SameSite=Strict
+• 12-hour session expiry
+• HMAC-signed session
+• timing-safe password comparison
+• noindex / noarchive</pre>
+    <button id="logout" class="logout">Lock Vault</button>
+  </section>
+  <div class="warning">Security note: the current password should be replaced with a long random password before production use. Do not paste the password into source code.</div>
+</main>
+<script>
+const form=document.getElementById("form"),password=document.getElementById("password"),status=document.getElementById("status"),login=document.getElementById("login"),vault=document.getElementById("vault"),submit=document.getElementById("submit");
+function show(ok){login.style.display=ok?"none":"block";vault.style.display=ok?"block":"none"}
+async function check(){const r=await fetch("/api/howlrex-vault",{credentials:"same-origin",cache:"no-store"});const d=await r.json();show(d.ok)}
+form.addEventListener("submit",async e=>{e.preventDefault();status.textContent="Checking…";status.className="status";submit.disabled=true;try{const r=await fetch("/api/howlrex-vault",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({password:password.value})});const d=await r.json();if(!r.ok||!d.ok){status.textContent="Access denied.";status.className="status bad";return}password.value="";status.textContent="";show(true)}catch{status.textContent="Vault unavailable.";status.className="status bad"}finally{submit.disabled=false}});
+document.getElementById("logout").addEventListener("click",async()=>{await fetch("/api/howlrex-vault",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify({action:"logout"})});show(false)});
+check().catch(()=>{});
+</script>
+</body>
+</html>
