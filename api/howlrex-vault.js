@@ -51,31 +51,44 @@ function cookieValue(req, name) {
 export default function handler(req, res) {
   const password = process.env.HOWLREX_VAULT_PASSWORD;
   const sessionSecret = process.env.HOWLREX_VAULT_SESSION_SECRET;
+  const vaultRecord = process.env.HOWLREX_VAULT_RECORD || "";
 
   if (!password || !sessionSecret) {
-    return json(res, 503, { ok: false, error: "Vault security is not configured." });
+    return json(res, 503, { ok: false, error: "Vault security is not configured." }, {
+      "Cache-Control": "no-store"
+    });
   }
 
   if (req.method === "GET") {
-    const token = cookieValue(req, COOKIE_NAME);
-    return json(res, 200, { ok: validSession(token, sessionSecret) });
+    const authenticated = validSession(cookieValue(req, COOKIE_NAME), sessionSecret);
+    return json(res, 200, {
+      ok: authenticated,
+      record: authenticated ? vaultRecord : ""
+    }, {
+      "Cache-Control": "no-store"
+    });
   }
 
   if (req.method !== "POST") {
     res.setHeader("Allow", "GET, POST");
-    return json(res, 405, { ok: false, error: "Method not allowed." });
+    return json(res, 405, { ok: false, error: "Method not allowed." }, {
+      "Cache-Control": "no-store"
+    });
   }
 
   let body = {};
   try {
     body = typeof req.body === "string" ? JSON.parse(req.body) : (req.body || {});
   } catch {
-    return json(res, 400, { ok: false, error: "Invalid request." });
+    return json(res, 400, { ok: false, error: "Invalid request." }, {
+      "Cache-Control": "no-store"
+    });
   }
 
   if (body.action === "logout") {
     return json(res, 200, { ok: true }, {
-      "Set-Cookie": COOKIE_NAME + "=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict"
+      "Set-Cookie": COOKIE_NAME + "=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict",
+      "Cache-Control": "no-store"
     });
   }
 
