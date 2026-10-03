@@ -99,9 +99,14 @@ function closeVideo(){
   modal.classList.remove("open");
   modal.setAttribute("aria-hidden","true");
   document.body.classList.remove("modal-open");
+
+  /* Resume the exact background-music session that was active before video opened. */
   if(resumeMusicAfterVideo){
     resumeMusicAfterVideo=false;
+    musicPausedForVideo=false;
     startMusic(true);
+  }else{
+    musicPausedForVideo=false;
   }
 }
 
@@ -242,6 +247,10 @@ document.addEventListener("visibilitychange",function(){
 });
 window.addEventListener("pageshow",function(){
   if(musicHasUserGesture&&!manualMusicOff&&!musicPausedForVideo&&!musicEnabled)startMusic(true);
+});
+window.addEventListener("pagehide",function(){
+  /* Stop playback when the visitor actually leaves/navigates away from HowlRex. */
+  if(backgroundMusic)backgroundMusic.pause();
 });
 updateMusicUI(false,"SOUND");
 
