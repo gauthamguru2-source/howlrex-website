@@ -15,28 +15,28 @@ const glow=document.querySelector(".cursor-glow");if(glow&&matchMedia("(pointer:
 const liveClock=document.getElementById("liveClock"),liveDate=document.getElementById("liveDate");
 function updateLiveClock(){if(!liveClock||!liveDate)return;const now=new Date(),pad=n=>String(n).padStart(2,"0");liveClock.textContent=pad(now.getHours())+":"+pad(now.getMinutes())+":"+pad(now.getSeconds());liveDate.textContent=new Intl.DateTimeFormat("en-IN",{weekday:"long",day:"2-digit",month:"long",year:"numeric",timeZone:"Asia/Kolkata"}).format(now).toUpperCase()}
 updateLiveClock();setInterval(updateLiveClock,1000);
-/* HOWLREX BACKGROUND MUSIC — RESILIENT PLAYBACK */
+/* HOWLREX BACKGROUND MUSIC — EXPLICIT USER-START */
 const backgroundMusic=document.getElementById("backgroundMusic"),musicToggle=document.getElementById("musicToggle"),musicLabel=document.querySelector(".music-label");
-let musicEnabled=false,manualMusicOff=false,musicPausedForVideo=false,recoveryTimer=null;
+let musicEnabled=false,manualMusicOff=false,musicPausedForVideo=false;
 function updateMusicUI(on){musicEnabled=on;musicToggle?.setAttribute("aria-pressed",on?"true":"false");musicToggle?.setAttribute("aria-label",on?"Turn background music off":"Start background music");if(musicLabel)musicLabel.textContent=on?"SOUND ON":"SOUND"}
-function startMusic(force=false){if(!backgroundMusic||manualMusicOff&&!force||musicPausedForVideo)return;clearTimeout(recoveryTimer);backgroundMusic.volume=.28;const p=backgroundMusic.play();if(p)p.then(()=>updateMusicUI(true)).catch(()=>updateMusicUI(false))}
-function stopMusic(reason="manual"){if(!backgroundMusic)return;if(reason==="video")musicPausedForVideo=true;backgroundMusic.pause();updateMusicUI(false)}
-function recoverMusic(){if(!backgroundMusic||manualMusicOff||musicPausedForVideo)return;if(document.visibilityState==="hidden")return;if(backgroundMusic.paused){clearTimeout(recoveryTimer);recoveryTimer=setTimeout(()=>startMusic(),120)}}
-if(backgroundMusic){
-  backgroundMusic.addEventListener("error",()=>updateMusicUI(false));
-  backgroundMusic.addEventListener("ended",()=>{if(!manualMusicOff&&!musicPausedForVideo){backgroundMusic.currentTime=0;startMusic()}});
-  backgroundMusic.addEventListener("pause",recoverMusic);
-  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")recoverMusic()});
-  window.addEventListener("pageshow",recoverMusic);
-  window.addEventListener("focus",recoverMusic);
-  window.addEventListener("online",recoverMusic);
-  window.addEventListener("load",()=>setTimeout(()=>startMusic(),100),{once:true});
-  const wakeMusic=()=>startMusic(true);
-  document.addEventListener("scroll",wakeMusic,{passive:true});
-  document.addEventListener("wheel",wakeMusic,{passive:true});
-  document.addEventListener("touchmove",wakeMusic,{passive:true});
-  document.addEventListener("pointermove",wakeMusic,{passive:true});
-  document.addEventListener("pointerup",wakeMusic,{passive:true});
-  document.addEventListener("touchend",wakeMusic,{passive:true});
+async function startMusic(force=false){
+  if(!backgroundMusic||manualMusicOff&&!force||musicPausedForVideo)return false;
+  try{
+    backgroundMusic.volume=.28;
+    await backgroundMusic.play();
+    updateMusicUI(true);
+    return true;
+  }catch(err){
+    updateMusicUI(false);
+    return false;
+  }
 }
+function stopMusic(reason="manual"){if(!backgroundMusic)return;if(reason==="video")musicPausedForVideo=true;backgroundMusic.pause();updateMusicUI(false)}
+backgroundMusic?.addEventListener("error",()=>updateMusicUI(false));
+backgroundMusic?.addEventListener("ended",()=>{if(!manualMusicOff&&!musicPausedForVideo){backgroundMusic.currentTime=0;startMusic(true)}});
+/* A real click/tap is the reliable browser permission boundary for audible playback. */
+const activateMusic=()=>{if(!musicEnabled&&!manualMusicOff)startMusic(true)};
 musicToggle?.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(musicEnabled){manualMusicOff=true;musicPausedForVideo=false;stopMusic()}else{manualMusicOff=false;musicPausedForVideo=false;startMusic(true)}});
+document.addEventListener("click",activateMusic,{passive:true});
+document.addEventListener("pointerdown",activateMusic,{passive:true});
+document.addEventListener("touchstart",activateMusic,{passive:true});
