@@ -1,4 +1,5 @@
 const topbar=document.querySelector(".topbar"),menuBtn=document.querySelector(".menu-btn"),mobileMenu=document.querySelector(".mobile-menu");
+document.documentElement.classList.add("js-ready");
 window.addEventListener("scroll",()=>topbar?.classList.toggle("scrolled",scrollY>30),{passive:true});
 menuBtn?.addEventListener("click",e=>{e.preventDefault();const open=mobileMenu.classList.toggle("open");menuBtn.setAttribute("aria-expanded",open);mobileMenu.setAttribute("aria-hidden",!open)});
 document.querySelectorAll(".mobile-menu a[href^="#"]").forEach(a=>a.addEventListener("click",()=>{mobileMenu.classList.remove("open");menuBtn.setAttribute("aria-expanded","false");mobileMenu.setAttribute("aria-hidden","true")}));
@@ -30,7 +31,7 @@ if(backgroundMusic){
   window.addEventListener("focus",recoverMusic);
   window.addEventListener("online",recoverMusic);
   window.addEventListener("load",()=>setTimeout(()=>startMusic(),100),{once:true});
-  const wakeMusic=()=>startMusic();
+  const wakeMusic=()=>startMusic(true);
   document.addEventListener("scroll",wakeMusic,{passive:true});
   document.addEventListener("wheel",wakeMusic,{passive:true});
   document.addEventListener("touchmove",wakeMusic,{passive:true});
