@@ -1,0 +1,17 @@
+{
+  "project": "HOWLREX",
+  "purpose": "Known-good reconstruction baseline for Safety recovery.",
+  "baseline_commit": "98dbf54a35783056baa74238c69a8cf3358403bd",
+  "baseline_branch": "howlrex-original-baseline-2026-10-03",
+  "verified_at": "2026-10-03",
+  "verified_features": [
+    "resilient background music",
+    "live India clock/date",
+    "stable video player",
+    "existing media assets",
+    "security/recovery files"
+  ],
+  "restore_policy": "Safety recovery restores the website runtime to this verified baseline. Secrets and vault credentials are never stored here.",
+  "chat_command": "Safety",
+  "stop_command": "abort"
+}
