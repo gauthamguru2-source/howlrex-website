@@ -20,3 +20,12 @@
 
 /* SAFETY RENDER FALLBACK: content must remain visible even if enhancement JS fails */
 .reveal{opacity:1;transform:none}
+
+/* Mobile audio control: always reachable and touch-friendly */
+.audio-control{position:fixed;right:18px;bottom:18px;z-index:1000;display:flex;align-items:center;gap:8px}
+.audio-control button{min-width:78px;min-height:44px;padding:10px 14px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(8,8,8,.78);color:#fff;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font:600 11px/1 inherit;letter-spacing:.14em;cursor:pointer;touch-action:manipulation}
+.audio-control audio{display:none}
+@media (max-width:600px){
+  .audio-control{right:14px;bottom:max(14px,env(safe-area-inset-bottom));}
+  .audio-control button{min-width:92px;min-height:46px;font-size:11px;}
+}
