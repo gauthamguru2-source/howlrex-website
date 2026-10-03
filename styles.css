@@ -17,3 +17,6 @@
 .hero-time cite{font:400 7px DM Sans,sans-serif;letter-spacing:.2em;color:#666;margin-left:8px;font-style:normal;text-transform:uppercase}
 @keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.72)}}
 @media(max-width:560px){.hero-time{margin-top:19px;padding:13px 0}.hero-time .time-zone{display:none}.live-clock{font-size:42px}.live-date{font-size:7px;letter-spacing:.15em;padding-right:65px}.since-year{top:49px}.since-year strong{font-size:23px}.hero-time blockquote{font-size:13px;max-width:310px}.hero-time cite{display:block;margin:7px 0 0}}
+
+/* SAFETY RENDER FALLBACK: content must remain visible even if enhancement JS fails */
+.reveal{opacity:1;transform:none}
