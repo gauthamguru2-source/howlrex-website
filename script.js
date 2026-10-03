@@ -208,6 +208,11 @@ function userStartMusic(){
 }
 
 if(backgroundMusic){
+  backgroundMusic.preload="auto";
+  backgroundMusic.load();
+  backgroundMusic.addEventListener("canplay",function(){
+    if(!musicEnabled&&!manualMusicOff&&!musicPausedForVideo)updateMusicUI(false,"TAP TO PLAY");
+  });
   backgroundMusic.addEventListener("play",function(){updateMusicUI(true,"SOUND ON");});
   backgroundMusic.addEventListener("playing",function(){updateMusicUI(true,"SOUND ON");});
   backgroundMusic.addEventListener("pause",function(){
@@ -239,6 +244,9 @@ if(musicToggle){
 document.addEventListener("pointerup",function(e){
   if(!musicToggle||!musicToggle.contains(e.target))userStartMusic();
 },{passive:true});
+document.addEventListener("touchend",function(e){
+  if(!musicToggle||!musicToggle.contains(e.target))userStartMusic();
+},{passive:true});
 document.addEventListener("keydown",function(e){
   if((e.key==="Enter"||e.key===" ")&&!musicEnabled&&!manualMusicOff&&!musicToggle?.contains(e.target))userStartMusic();
 });
@@ -252,7 +260,7 @@ window.addEventListener("pagehide",function(){
   /* Stop playback when the visitor actually leaves/navigates away from HowlRex. */
   if(backgroundMusic)backgroundMusic.pause();
 });
-updateMusicUI(false,"SOUND");
+updateMusicUI(false,backgroundMusic && backgroundMusic.readyState >= 2 ? "TAP TO PLAY" : "LOADING");
 
 /* CURSOR GLOW */
 var glow=$(".cursor-glow");
