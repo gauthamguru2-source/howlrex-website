@@ -16,9 +16,19 @@ function updateLiveClock(){if(!liveClock||!liveDate)return;const now=new Date(),
 updateLiveClock();setInterval(updateLiveClock,1000);
 /* HOWLREX BACKGROUND MUSIC */
 const backgroundMusic=document.getElementById("backgroundMusic"),musicToggle=document.getElementById("musicToggle"),musicLabel=document.querySelector(".music-label");
-let musicEnabled=false;
+let musicEnabled=false,manualMusicOff=false;
 function updateMusicUI(on){musicEnabled=on;musicToggle?.setAttribute("aria-pressed",on?"true":"false");musicToggle?.setAttribute("aria-label",on?"Turn background music off":"Start background music");if(musicLabel)musicLabel.textContent=on?"SOUND ON":"SOUND"}
-function startMusic(){if(!backgroundMusic)return;backgroundMusic.volume=.28;const p=backgroundMusic.play();if(p)p.then(()=>updateMusicUI(true)).catch(()=>updateMusicUI(false))}
+function startMusic(force=false){if(!backgroundMusic||manualMusicOff&&!force)return;backgroundMusic.volume=.28;const p=backgroundMusic.play();if(p)p.then(()=>updateMusicUI(true)).catch(()=>updateMusicUI(false))}
 function stopMusic(){backgroundMusic?.pause();updateMusicUI(false)}
-if(backgroundMusic){backgroundMusic.addEventListener("error",()=>updateMusicUI(false));window.addEventListener("load",()=>setTimeout(startMusic,100),{once:true});document.addEventListener("pointerup",startMusic,{passive:true});document.addEventListener("touchend",startMusic,{passive:true});document.addEventListener("click",startMusic,{passive:true})}
-musicToggle?.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();musicEnabled?stopMusic():startMusic()});
+if(backgroundMusic){
+  backgroundMusic.addEventListener("error",()=>updateMusicUI(false));
+  window.addEventListener("load",()=>setTimeout(()=>startMusic(),100),{once:true});
+  const wakeMusic=()=>startMusic();
+  document.addEventListener("scroll",wakeMusic,{passive:true});
+  document.addEventListener("wheel",wakeMusic,{passive:true});
+  document.addEventListener("touchmove",wakeMusic,{passive:true});
+  document.addEventListener("pointermove",wakeMusic,{passive:true});
+  document.addEventListener("pointerup",wakeMusic,{passive:true});
+  document.addEventListener("touchend",wakeMusic,{passive:true});
+}
+musicToggle?.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(musicEnabled){manualMusicOff=true;stopMusic()}else{manualMusicOff=false;startMusic(true)}});
