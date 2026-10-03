@@ -1,0 +1,32 @@
+{
+  "project": "HOWLREX",
+  "protection_version": "5-layer",
+  "purpose": "Reconstruction and integrity blueprint for the HowlRex project.",
+  "layers": {
+    "1_primary": "GitHub main source of truth",
+    "2_recovery": "Existing howlrex-golden-backup recovery branch",
+    "3_recovery_secondary": "Existing howlrex-golden-backup-2 recovery branch",
+    "4_automated": "GitHub Actions integrity/recovery workflow",
+    "5_reconstruction": "This manifest plus project history and media references allow the project to be rebuilt when source files are damaged or missing."
+  },
+  "important_files": [
+    "index.html",
+    "styles.css",
+    "script.js",
+    "vercel.json",
+    "robots.txt",
+    "SECURITY.md",
+    "SECURITY-MANIFEST.json",
+    ".github/CODEOWNERS",
+    ".github/workflows/howlrex-auto-recovery.yml",
+    "assets/audio/howlrex-background.m4a"
+  ],
+  "official_destinations": {
+    "website": "https://howlrex-website.vercel.app/",
+    "instagram": "https://www.instagram.com/howlrex07/",
+    "youtube": "https://www.youtube.com/@HowlRex",
+    "github": "https://github.com/gauthamguru2-source/howlrex-website"
+  },
+  "continuity_keyword": "Howl Rex",
+  "policy": "When the user mentions Howl Rex, use the available project context and repository history to continue assistance. No system can honestly guarantee that an external service or administrator can never delete data; independent backups outside a single service are required for true disaster resistance."
+}
