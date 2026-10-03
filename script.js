@@ -15,29 +15,110 @@ const glow=document.querySelector(".cursor-glow");if(glow&&matchMedia("(pointer:
 const liveClock=document.getElementById("liveClock"),liveDate=document.getElementById("liveDate");
 function updateLiveClock(){if(!liveClock||!liveDate)return;const now=new Date(),pad=n=>String(n).padStart(2,"0");liveClock.textContent=pad(now.getHours())+":"+pad(now.getMinutes())+":"+pad(now.getSeconds());liveDate.textContent=new Intl.DateTimeFormat("en-IN",{weekday:"long",day:"2-digit",month:"long",year:"numeric",timeZone:"Asia/Kolkata"}).format(now).toUpperCase()}
 updateLiveClock();setInterval(updateLiveClock,1000);
-/* HOWLREX BACKGROUND MUSIC — EXPLICIT USER-START */
-const backgroundMusic=document.getElementById("backgroundMusic"),musicToggle=document.getElementById("musicToggle"),musicLabel=document.querySelector(".music-label");
-let musicEnabled=false,manualMusicOff=false,musicPausedForVideo=false;
-function updateMusicUI(on){musicEnabled=on;musicToggle?.setAttribute("aria-pressed",on?"true":"false");musicToggle?.setAttribute("aria-label",on?"Turn background music off":"Start background music");if(musicLabel)musicLabel.textContent=on?"SOUND ON":"SOUND"}
+/* HOWLREX BACKGROUND MUSIC — MOBILE-SAFE USER-GESTURE PLAYBACK */
+const backgroundMusic=document.getElementById("backgroundMusic"),
+      musicToggle=document.getElementById("musicToggle"),
+      musicLabel=document.querySelector(".music-label");
+
+let musicEnabled=false,
+    manualMusicOff=false,
+    musicPausedForVideo=false,
+    musicHasUserGesture=false;
+
+function updateMusicUI(on,label){
+  musicEnabled=on;
+  musicToggle?.setAttribute("aria-pressed",on?"true":"false");
+  musicToggle?.setAttribute("aria-label",on?"Turn background music off":"Start background music");
+  if(musicLabel)musicLabel.textContent=label||(on?"SOUND ON":"SOUND");
+}
+
+function musicErrorLabel(){
+  const code=backgroundMusic?.error?.code;
+  if(code===4)return "FORMAT ERROR";
+  if(code===3)return "LOAD ERROR";
+  if(code===2)return "NETWORK";
+  return "TAP TO PLAY";
+}
+
 async function startMusic(force=false){
-  if(!backgroundMusic||manualMusicOff&&!force||musicPausedForVideo)return false;
+  if(!backgroundMusic||musicPausedForVideo)return false;
+  if(manualMusicOff&&!force)return false;
+
   try{
-    backgroundMusic.volume=.28;
-    await backgroundMusic.play();
-    updateMusicUI(true);
+    backgroundMusic.volume=0.28;
+    backgroundMusic.muted=false;
+    const playPromise=backgroundMusic.play();
+    if(playPromise&&typeof playPromise.then==="function")await playPromise;
+    musicHasUserGesture=true;
+    updateMusicUI(true,"SOUND ON");
     return true;
   }catch(err){
-    updateMusicUI(false);
+    updateMusicUI(false,musicErrorLabel());
     return false;
   }
 }
-function stopMusic(reason="manual"){if(!backgroundMusic)return;if(reason==="video")musicPausedForVideo=true;backgroundMusic.pause();updateMusicUI(false)}
-backgroundMusic?.addEventListener("error",()=>updateMusicUI(false));
-backgroundMusic?.addEventListener("ended",()=>{if(!manualMusicOff&&!musicPausedForVideo){backgroundMusic.currentTime=0;startMusic(true)}});
-/* A real click/tap is the reliable browser permission boundary for audible playback. */
-const activateMusic=()=>{if(!musicEnabled&&!manualMusicOff)startMusic(true)};
-window.addEventListener("load",()=>{updateMusicUI(false)});
-musicToggle?.addEventListener("click",async e=>{e.preventDefault();e.stopPropagation();if(musicEnabled){manualMusicOff=true;musicPausedForVideo=false;stopMusic()}else{manualMusicOff=false;musicPausedForVideo=false;await startMusic(true)}});
-document.addEventListener("click",activateMusic,{passive:true});
-document.addEventListener("pointerdown",e=>{if(!musicToggle?.contains(e.target))activateMusic()},{passive:true});
-document.addEventListener("touchstart",e=>{if(!musicToggle?.contains(e.target))activateMusic()},{passive:true});
+
+function stopMusic(reason="manual"){
+  if(!backgroundMusic)return;
+  if(reason==="video")musicPausedForVideo=true;
+  backgroundMusic.pause();
+  updateMusicUI(false,"SOUND");
+}
+
+function userStartMusic(){
+  if(!musicEnabled&&!manualMusicOff&&!musicPausedForVideo)startMusic(true);
+}
+
+/* Media diagnostics keep the control truthful instead of claiming playback started. */
+backgroundMusic?.addEventListener("play",()=>updateMusicUI(true,"SOUND ON"));
+backgroundMusic?.addEventListener("playing",()=>updateMusicUI(true,"SOUND ON"));
+backgroundMusic?.addEventListener("pause",()=>{
+  if(!musicPausedForVideo&&!manualMusicOff)updateMusicUI(false,"TAP TO PLAY");
+});
+backgroundMusic?.addEventListener("error",()=>updateMusicUI(false,musicErrorLabel()));
+backgroundMusic?.addEventListener("stalled",()=>{if(!musicEnabled)updateMusicUI(false,"LOADING")});
+backgroundMusic?.addEventListener("waiting",()=>{if(musicEnabled)updateMusicUI(true,"LOADING")});
+backgroundMusic?.addEventListener("ended",()=>{
+  if(!manualMusicOff&&!musicPausedForVideo){
+    backgroundMusic.currentTime=0;
+    startMusic(true);
+  }
+});
+
+/* The first real tap/click anywhere is allowed to start audible media on mobile.
+   The dedicated SOUND button remains the explicit fallback/control. */
+musicToggle?.addEventListener("click",async e=>{
+  e.preventDefault();
+  e.stopPropagation();
+  if(musicEnabled){
+    manualMusicOff=true;
+    musicPausedForVideo=false;
+    stopMusic();
+  }else{
+    manualMusicOff=false;
+    musicPausedForVideo=false;
+    await startMusic(true);
+  }
+});
+
+document.addEventListener("pointerup",e=>{
+  if(!musicToggle?.contains(e.target))userStartMusic();
+},{passive:true});
+
+document.addEventListener("keydown",e=>{
+  if((e.key==="Enter"||e.key===" ")&&!musicEnabled&&!manualMusicOff&&!musicToggle?.contains(e.target)){
+    userStartMusic();
+  }
+});
+
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden&&musicHasUserGesture&&!manualMusicOff&&!musicPausedForVideo&&!musicEnabled){
+    startMusic(true);
+  }
+});
+
+window.addEventListener("pageshow",()=>{
+  if(musicHasUserGesture&&!manualMusicOff&&!musicPausedForVideo&&!musicEnabled)startMusic(true);
+});
+
+updateMusicUI(false,"SOUND");
