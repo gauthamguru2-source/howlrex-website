@@ -10,6 +10,10 @@ function openVideo(key){const src=videoFiles[key];if(!src)return;resumeMusicAfte
 function closeVideo(){player.pause();player.removeAttribute("src");player.load();modal.classList.remove("open");modal.setAttribute("aria-hidden","true");document.body.classList.remove("modal-open");if(resumeMusicAfterVideo){resumeMusicAfterVideo=false;startMusic()}}
 document.querySelectorAll("[data-video]").forEach(el=>el.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openVideo(el.dataset.video)}));document.querySelector(".video-close")?.addEventListener("click",closeVideo);document.querySelector(".video-backdrop")?.addEventListener("click",closeVideo);document.addEventListener("keydown",e=>{if(e.key==="Escape"&&modal.classList.contains("open"))closeVideo()});
 const glow=document.querySelector(".cursor-glow");if(glow&&matchMedia("(pointer:fine)").matches)document.addEventListener("pointermove",e=>{glow.style.left=e.clientX+"px";glow.style.top=e.clientY+"px"});
+/* LIVE HOWLREX CLOCK */
+const liveClock=document.getElementById("liveClock"),liveDate=document.getElementById("liveDate");
+function updateLiveClock(){if(!liveClock||!liveDate)return;const now=new Date(),pad=n=>String(n).padStart(2,"0");liveClock.textContent=pad(now.getHours())+":"+pad(now.getMinutes())+":"+pad(now.getSeconds());liveDate.textContent=new Intl.DateTimeFormat("en-IN",{weekday:"long",day:"2-digit",month:"long",year:"numeric",timeZone:"Asia/Kolkata"}).format(now).toUpperCase()}
+updateLiveClock();setInterval(updateLiveClock,1000);
 /* HOWLREX BACKGROUND MUSIC */
 const backgroundMusic=document.getElementById("backgroundMusic"),musicToggle=document.getElementById("musicToggle"),musicLabel=document.querySelector(".music-label");
 let musicEnabled=false;
