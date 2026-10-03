@@ -36,7 +36,7 @@ backgroundMusic?.addEventListener("error",()=>updateMusicUI(false));
 backgroundMusic?.addEventListener("ended",()=>{if(!manualMusicOff&&!musicPausedForVideo){backgroundMusic.currentTime=0;startMusic(true)}});
 /* A real click/tap is the reliable browser permission boundary for audible playback. */
 const activateMusic=()=>{if(!musicEnabled&&!manualMusicOff)startMusic(true)};
-musicToggle?.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(musicEnabled){manualMusicOff=true;musicPausedForVideo=false;stopMusic()}else{manualMusicOff=false;musicPausedForVideo=false;startMusic(true)}});
+musicToggle?.addEventListener("click",async e=>{e.preventDefault();e.stopPropagation();if(musicEnabled){manualMusicOff=true;musicPausedForVideo=false;stopMusic()}else{manualMusicOff=false;musicPausedForVideo=false;await startMusic(true)}});
 document.addEventListener("click",activateMusic,{passive:true});
-document.addEventListener("pointerdown",activateMusic,{passive:true});
-document.addEventListener("touchstart",activateMusic,{passive:true});
+document.addEventListener("pointerdown",e=>{if(!musicToggle?.contains(e.target))activateMusic()},{passive:true});
+document.addEventListener("touchstart",e=>{if(!musicToggle?.contains(e.target))activateMusic()},{passive:true});
