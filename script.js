@@ -39,3 +39,186 @@ if(backgroundMusic){
   document.addEventListener("touchend",wakeMusic,{passive:true});
 }
 musicToggle?.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(musicEnabled){manualMusicOff=true;musicPausedForVideo=false;stopMusic()}else{manualMusicOff=false;musicPausedForVideo=false;startMusic(true)}});
+
+
+/* HOWLREX CINEMA 2.0 — LIVE MEDIA LAYER */
+(()=>{
+  const mediaData=[
+    {key:"thirty-sec",label:"SHORT FILM",name:"30 SECOND CUT",sub:"ENERGY / STYLE / MOTION"},
+    {key:"new-home",label:"LIFESTYLE",name:"NEW HOME",sub:"A NEW CHAPTER"},
+    {key:"main-film",label:"ORIGINAL",name:"THE FRAME",sub:"BETWEEN THE SHOTS"}
+  ];
+  const srcFor=key=>videoFiles[key];
+  const formatTime=s=>{
+    if(!Number.isFinite(s))return "--:--";
+    const m=Math.floor(s/60),sec=Math.floor(s%60);
+    return String(m).padStart(2,"0")+":"+String(sec).padStart(2,"0");
+  };
+
+  /* Featured film: a silent cinematic preview with the existing poster retained as fallback. */
+  const feature=document.querySelector(".feature-film");
+  if(feature){
+    const fv=document.createElement("video");
+    fv.className="feature-video";
+    fv.muted=true; fv.loop=true; fv.autoplay=true; fv.playsInline=true;
+    fv.preload="metadata"; fv.setAttribute("aria-hidden","true");
+    fv.src=srcFor("main-film");
+    const status=document.createElement("div");
+    status.className="film-status";
+    status.innerHTML="<i></i><span>CINEMA PREVIEW / HD</span>";
+    feature.insertBefore(fv,feature.querySelector(".film-overlay"));
+    feature.appendChild(status);
+    fv.addEventListener("loadeddata",()=>{fv.classList.add("ready");feature.classList.add("media-ready")},{once:true});
+    fv.addEventListener("error",()=>{fv.removeAttribute("src");fv.load()});
+    fv.play().catch(()=>{});
+  }
+
+  /* Convert the existing cards into premium, lightweight video previews. */
+  const cards=[...document.querySelectorAll(".media-card[data-video]")];
+  cards.forEach((card,index)=>{
+    const key=card.dataset.video;
+    const data=mediaData.find(x=>x.key===key);
+    if(!data)return;
+
+    card.setAttribute("tabindex","0");
+    card.setAttribute("aria-label","Play "+data.name);
+    const preview=document.createElement("video");
+    preview.className="media-preview";
+    preview.muted=true; preview.loop=true; preview.playsInline=true;
+    preview.preload="none"; preview.setAttribute("aria-hidden","true");
+    const duration=document.createElement("span");
+    duration.className="media-duration";
+    duration.textContent="MEDIA";
+    const live=document.createElement("span");
+    live.className="media-live";
+    live.textContent="PREVIEW";
+    const progress=document.createElement("div");
+    progress.className="media-progress";
+    progress.innerHTML="<span></span>";
+    card.insertBefore(preview,card.firstChild);
+    card.append(duration,live,progress);
+
+    let loaded=false;
+    const loadPreview=()=>{
+      if(loaded)return;
+      loaded=true;
+      preview.src=srcFor(key);
+      preview.load();
+      preview.addEventListener("loadedmetadata",()=>{
+        duration.textContent=formatTime(preview.duration);
+      },{once:true});
+      preview.addEventListener("loadeddata",()=>{
+        preview.classList.add("ready");
+        preview.play().catch(()=>{});
+      },{once:true});
+      preview.addEventListener("timeupdate",()=>{
+        const pct=preview.duration?preview.currentTime/preview.duration*100:0;
+        progress.firstElementChild.style.width=pct+"%";
+      });
+      preview.addEventListener("error",()=>{
+        preview.classList.remove("ready");
+        duration.textContent="VIDEO";
+      });
+    };
+    const stopPreview=()=>{
+      if(!loaded)return;
+      preview.pause();
+      try{preview.currentTime=0}catch{}
+      progress.firstElementChild.style.width="0%";
+    };
+    card.addEventListener("pointerenter",loadPreview,{passive:true});
+    card.addEventListener("pointerleave",stopPreview,{passive:true});
+    card.addEventListener("focusin",loadPreview);
+    card.addEventListener("focusout",stopPreview);
+    card.addEventListener("touchstart",loadPreview,{passive:true});
+  });
+
+  /* Premium cinema toolbar. */
+  const rail=document.querySelector(".media-rail");
+  if(rail){
+    const toolbar=document.createElement("div");
+    toolbar.className="cinema-toolbar reveal visible";
+    toolbar.innerHTML='<div class="toolbar-left"><span>HOWLREX CINEMA</span><strong>MEDIA LIBRARY</strong></div><div class="toolbar-right"><span class="cinema-hint">HOVER FOR MOTION</span><span>03 FILMS / LOCAL 4K READY</span></div>';
+    rail.parentNode.insertBefore(toolbar,rail);
+  }
+
+  /* Upgrade the existing modal with browse controls without replacing the native video controls. */
+  if(modal&&player&&title){
+    const bar=modal.querySelector(".player-bar");
+    if(bar&&!bar.querySelector(".player-nav")){
+      const originalTitle=title;
+      const main=document.createElement("div");
+      main.className="player-main";
+      originalTitle.parentNode.insertBefore(main,originalTitle);
+      main.appendChild(originalTitle);
+      const eyebrow=document.createElement("span");
+      eyebrow.className="player-eyebrow";
+      eyebrow.textContent="HOWLREX CINEMA";
+      main.appendChild(eyebrow);
+
+      const navWrap=document.createElement("div");
+      navWrap.className="player-nav";
+      const prev=document.createElement("button");
+      const next=document.createElement("button");
+      prev.type=next.type="button";
+      prev.setAttribute("aria-label","Previous film");
+      next.setAttribute("aria-label","Next film");
+      prev.textContent="←"; next.textContent="→";
+      navWrap.append(prev,next);
+
+      const quality=document.createElement("span");
+      quality.className="player-quality";
+      quality.textContent="HD / SOUND ON PLAYER";
+      bar.replaceChildren(main,navWrap,quality);
+
+      let currentIndex=0;
+      const findIndex=key=>Math.max(0,mediaData.findIndex(x=>x.key===key));
+      const playKey=key=>{
+        const src=srcFor(key);
+        if(!src)return;
+        currentIndex=findIndex(key);
+        title.textContent="HOWLREX • "+key.replaceAll("-"," ").toUpperCase();
+        player.src=src;
+        player.load();
+        player.play().catch(()=>{});
+        prev.disabled=currentIndex<=0;
+        next.disabled=currentIndex>=mediaData.length-1;
+      };
+      const originalOpen=window.openVideo;
+      /* Buttons already call the original function; observe the modal after it opens and sync the index. */
+      const sync=()=>{
+        const key=player.src.split("/").pop()?.split(".")[0]||"";
+        currentIndex=findIndex(key);
+        prev.disabled=currentIndex<=0;
+        next.disabled=currentIndex>=mediaData.length-1;
+      };
+      prev.addEventListener("click",e=>{
+        e.stopPropagation();
+        if(currentIndex>0)playKey(mediaData[currentIndex-1].key);
+      });
+      next.addEventListener("click",e=>{
+        e.stopPropagation();
+        if(currentIndex<mediaData.length-1)playKey(mediaData[currentIndex+1].key);
+      });
+      modal.addEventListener("transitionend",sync);
+      const observer=new MutationObserver(sync);
+      observer.observe(modal,{attributes:true,attributeFilter:["class","aria-hidden"]});
+      document.addEventListener("keydown",e=>{
+        if(!modal.classList.contains("open"))return;
+        if(e.key==="ArrowLeft"&&!prev.disabled)prev.click();
+        if(e.key==="ArrowRight"&&!next.disabled)next.click();
+      });
+      sync();
+    }
+  }
+
+  /* Horizontal cinema rail: wheel gestures become a natural film-strip interaction. */
+  if(rail){
+    rail.addEventListener("wheel",e=>{
+      if(Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;
+      if(rail.scrollWidth<=rail.clientWidth)return;
+      e.preventDefault();
+      rail.scrollLeft+=e.deltaY;
+    },{passive:false});
+  }
+})();
