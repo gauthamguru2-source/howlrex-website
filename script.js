@@ -135,20 +135,24 @@ function getIndiaDate(){
     }).format(now).toUpperCase();
     var timeParts=new Intl.DateTimeFormat("en-IN",{
       timeZone:"Asia/Kolkata",
-      hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false
+      hour:"numeric",minute:"2-digit",second:"2-digit",hour12:true
     }).formatToParts(now);
     var map={};
     timeParts.forEach(function(p){map[p.type]=p.value;});
-    var h=map.hour||"00",m=map.minute||"00",s=map.second||"00";
-    return {time:h+":"+m+":"+s,date:dateText};
+    var h=map.hour||"12",m=map.minute||"00",s=map.second||"00";
+    var period=(map.dayPeriod||"AM").toUpperCase();
+    return {time:h+":"+m+":"+s+" "+period,date:dateText};
   }catch(err){
     var utc=now.getTime()+(now.getTimezoneOffset()*60000);
     var india=new Date(utc+19800000);
     var pad=function(n){return String(n).padStart(2,"0");};
     var days=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"];
     var months=["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
+    var hour=india.getHours();
+    var period=hour>=12?"PM":"AM";
+    hour=hour%12||12;
     return {
-      time:pad(india.getHours())+":"+pad(india.getMinutes())+":"+pad(india.getSeconds()),
+      time:hour+":"+pad(india.getMinutes())+":"+pad(india.getSeconds())+" "+period,
       date:days[india.getDay()]+", "+pad(india.getDate())+" "+months[india.getMonth()]+" "+india.getFullYear()
     };
   }
