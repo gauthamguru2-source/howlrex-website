@@ -26,4 +26,45 @@ jobs:
           test -f .github/CODEOWNERS
           test -f vercel.json
           test -f robots.txt
-          echo "HOWLREX integrity checks passed."
+          echo "HOWLREX identity and security checks passed."
+
+      - name: Verify all referenced local media assets exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          sources = [Path("index.html"), Path("styles.css"), Path("script.js")]
+          patterns = [
+              re.compile(r"""(?:src|href|poster|content)\s*=\s*["'](assets/[^"'?#]+)""", re.I),
+              re.compile(r"""url\(\s*["']?(assets/[^"'")?#]+)""", re.I),
+              re.compile(r"""["'](assets/(?:img|video|audio)/[^"']+)["']""", re.I),
+          ]
+          refs = set()
+          for source in sources:
+              if not source.is_file():
+                  print(f"FAIL: required source file is missing: {source}")
+                  sys.exit(1)
+              content = source.read_text(encoding="utf-8")
+              for pattern in patterns:
+                  refs.update(match.group(1).split("?")[0].split("#")[0] for match in pattern.finditer(content))
+
+          required = {
+              "assets/audio/howlrex-background.m4a",
+              "assets/video/main-film.mp4",
+              "assets/video/thirty-sec.mp4",
+              "assets/video/new-home.mp4",
+          }
+          refs.update(required)
+          missing = sorted(path for path in refs if not Path(path).is_file() or Path(path).stat().st_size == 0)
+          if missing:
+              print("FAIL: missing or empty referenced assets:")
+              for path in missing:
+                  print(f" - {path}")
+              sys.exit(1)
+
+          print(f"HOWLREX asset integrity passed: checked {len(refs)} local asset paths.")
+          PY
