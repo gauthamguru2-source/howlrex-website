@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+  <url>
+    <loc>https://howlrex-website.vercel.app/insta360-wave-riding.html</loc>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/QQ-wm0-KYTI/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>Insta360 Wave Riding | 360° Action Video | HowlRex</video:title>
+      <video:description>Wave-riding action footage from HowlRex, presented through an Insta360 360-degree action camera perspective.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/QQ-wm0-KYTI</video:player_loc>
+    </video:video>
+  </url>
+</urlset>
