@@ -1,3 +1,5 @@
 User-agent: *
 Allow: /
+
 Sitemap: https://howlrex-website.vercel.app/sitemap.xml
+Sitemap: https://howlrex-website.vercel.app/video-sitemap.xml
